@@ -44,5 +44,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Round-5 体积守门员 —— main bundle gzip 必须 ≤ 200KB，否则 CI 失败。
+      # vendor-motion / vendor-markdown 各自也有独立阈值，挡住回归。
+      - name: Size limit
+        run: npx size-limit
+
       - name: Test
         run: npm test

@@ -113,7 +113,7 @@ console.log(response.text);`,
               <span>查看完整 API 文档</span>
             </a>
             <a
-              href="/sdk/typescript"
+              href="/sdks/typescript"
               className="flex items-center space-x-2 text-primary-600 hover:underline"
             >
               <Terminal className="w-5 h-5" />

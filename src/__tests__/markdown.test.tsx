@@ -73,30 +73,43 @@ Paragraph with **bold** and *italic*.
     expect(securitySource).toContain('| 角色 |');
   });
 
-  it('Installation 页面渲染时正文中至少出现 1 个 H2', async () => {
-    const { default: AppRoutes } = await import('../AppRoutes');
-    const { MemoryRouter } = await import('react-router-dom');
-    const { container } = render(
-      <MemoryRouter initialEntries={['/getting-started/installation']}>
-        <AppRoutes />
-      </MemoryRouter>
-    );
-    // 通过 data-testid 找到 markdown body 后断言其内含 H2
-    const md = container.querySelector('[data-testid="markdown-content"]');
-    expect(md).not.toBeNull();
-    expect(md?.querySelectorAll('h2').length).toBeGreaterThanOrEqual(1);
-  });
+  // 这是整树集成渲染：动态 import AppRoutes 会首次拉起全部页面 +
+  // framer-motion + react-markdown 依赖图，在冷缓存 / 受限 CI 上纯模块
+  // 转换与 happy-dom 建环境就要 5~8s（与渲染逻辑无关，紧随其后的
+  // SecurityArchitecture 用例走热缓存只要几毫秒）。给这两个整树用例
+  // 显式放宽到 20s，避免把环境 CPU 抖动误报成失败；快速单测仍用默认 5s。
+  it(
+    'Installation 页面渲染时正文中至少出现 1 个 H2',
+    async () => {
+      const { default: AppRoutes } = await import('../AppRoutes');
+      const { MemoryRouter } = await import('react-router-dom');
+      const { container } = render(
+        <MemoryRouter initialEntries={['/getting-started/installation']}>
+          <AppRoutes />
+        </MemoryRouter>
+      );
+      // 通过 data-testid 找到 markdown body 后断言其内含 H2
+      const md = container.querySelector('[data-testid="markdown-content"]');
+      expect(md).not.toBeNull();
+      expect(md?.querySelectorAll('h2').length).toBeGreaterThanOrEqual(1);
+    },
+    20_000,
+  );
 
-  it('SecurityArchitecture 页面渲染时正文内含「RBAC」关键词', async () => {
-    const { default: AppRoutes } = await import('../AppRoutes');
-    const { MemoryRouter } = await import('react-router-dom');
-    const { container } = render(
-      <MemoryRouter initialEntries={['/architecture/security']}>
-        <AppRoutes />
-      </MemoryRouter>
-    );
-    const md = container.querySelector('[data-testid="markdown-content"]');
-    expect(md).not.toBeNull();
-    expect(md?.textContent).toContain('RBAC');
-  });
+  it(
+    'SecurityArchitecture 页面渲染时正文内含「RBAC」关键词',
+    async () => {
+      const { default: AppRoutes } = await import('../AppRoutes');
+      const { MemoryRouter } = await import('react-router-dom');
+      const { container } = render(
+        <MemoryRouter initialEntries={['/architecture/security']}>
+          <AppRoutes />
+        </MemoryRouter>
+      );
+      const md = container.querySelector('[data-testid="markdown-content"]');
+      expect(md).not.toBeNull();
+      expect(md?.textContent).toContain('RBAC');
+    },
+    20_000,
+  );
 });

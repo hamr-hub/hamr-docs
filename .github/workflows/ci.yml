@@ -1,0 +1,53 @@
+name: CI
+
+# Round-4 CI Gate —— 任何 push / PR 到 main 与迭代分支都会触发：
+#   1. npm ci   —— 依赖锁文件复现
+#   2. lint     —— eslint 静态检查
+#   3. build    —— tsc + vite production bundle
+#   4. test     —— vitest 全部用例
+
+on:
+  push:
+    branches: [main, 'iter-loop-*']
+  pull_request:
+    branches: [main, 'iter-loop-*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint / Build / Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      # Round-5 体积守门员 —— main bundle gzip 必须 ≤ 200KB，否则 CI 失败。
+      # vendor-motion / vendor-markdown 各自也有独立阈值，挡住回归。
+      - name: Size limit
+        run: npx size-limit
+
+      - name: Test
+        run: npm test

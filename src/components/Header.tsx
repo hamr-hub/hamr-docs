@@ -1,21 +1,41 @@
 import { Link } from 'react-router-dom';
-import { Book, Menu, X, Github, Search } from 'lucide-react';
+import { Book, PanelLeft, Menu, X, Github, Search } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Header() {
+interface HeaderProps {
+  onOpenSearch: () => void;
+  onToggleSidebar: () => void;
+}
+
+export default function Header({ onOpenSearch, onToggleSidebar }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <Book className="w-8 h-8 text-primary-600" />
-            <span className="text-xl font-bold text-gray-900">HamR Docs</span>
-          </Link>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={onToggleSidebar}
+              className="md:hidden text-gray-600 hover:text-primary-600"
+              aria-label="打开文档导航"
+            >
+              <PanelLeft className="w-6 h-6" />
+            </button>
+            <Link to="/" className="flex items-center space-x-2">
+              <Book className="w-8 h-8 text-primary-600" />
+              <span className="text-xl font-bold text-gray-900">HamR Docs</span>
+            </Link>
+          </div>
 
           <nav className="hidden md:flex items-center space-x-6">
-            <button className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors">
+            <button
+              type="button"
+              onClick={onOpenSearch}
+              className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors"
+              aria-label="搜索文档 (按 ⌘K)"
+              aria-keyshortcuts="Meta+K Control+K"
+            >
               <Search className="w-5 h-5" />
               <span className="text-sm">搜索文档</span>
               <kbd className="px-2 py-1 text-xs bg-gray-100 border border-gray-300 rounded">⌘K</kbd>
@@ -40,6 +60,7 @@ export default function Header() {
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden text-gray-600 hover:text-primary-600"
+            aria-label={isMenuOpen ? '关闭导航菜单' : '打开导航菜单'}
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -49,6 +70,18 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <nav className="px-4 py-4 space-y-4">
+            <button
+              type="button"
+              onClick={() => {
+                setIsMenuOpen(false);
+                onOpenSearch();
+              }}
+              className="flex items-center space-x-2 text-gray-600 hover:text-primary-600"
+              aria-label="搜索文档 (按 ⌘K)"
+            >
+              <Search className="w-5 h-5" />
+              <span>搜索文档</span>
+            </button>
             <a
               href="https://hamr.top"
               className="block text-gray-600 hover:text-primary-600"

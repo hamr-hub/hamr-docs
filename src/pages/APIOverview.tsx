@@ -186,10 +186,10 @@ Content-Type: application/json
             >
               → 认证机制详解
             </a>
-            <a href="/api/chat" className="block text-blue-700 hover:underline">
+            <a href="/chat" className="block text-blue-700 hover:underline">
               → Chat API 完整文档
             </a>
-            <a href="/api/devices" className="block text-blue-700 hover:underline">
+            <a href="/devices" className="block text-blue-700 hover:underline">
               → Devices API 完整文档
             </a>
             <a href="/api/errors" className="block text-blue-700 hover:underline">

@@ -26,7 +26,7 @@ export default function Home() {
       icon: <Zap className="w-8 h-8" />,
       title: '最佳实践',
       description: '生产级代码示例和性能优化指南',
-      link: '/sdk/typescript',
+      link: '/sdks/typescript',
     },
   ];
 
@@ -118,7 +118,7 @@ console.log(response.text);
               </Link>
             </li>
             <li>
-              <Link to="/sdk/typescript" className="hover:underline">
+              <Link to="/sdks/typescript" className="hover:underline">
                 → SDK 使用指南
               </Link>
             </li>
